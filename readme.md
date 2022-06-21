@@ -1,4 +1,4 @@
-# metal detektor
+# metal detector
 metal detector type VLF
 discrimination of ferrous and non-ferrous metals
 using Arduino Nano
