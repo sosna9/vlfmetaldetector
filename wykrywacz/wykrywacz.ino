@@ -17,17 +17,28 @@ const int Timer0_pinIN = 4;       //feed timer with output
 const int Timer0_pinOUT = 9;
 
 // Analog pin definitions
+<<<<<<< Updated upstream
 const int PIN_receiverinput = 0;          //sygnał z cewki odbiorczej
 
 // zmienne używane w ISR
 int16_t bins[4];                         // zebranie 4 razy wartości amplitudy w czasie 1 okresu
+=======
+const int PIN_receiverinput = 0;          //receiver coil signal pin
+
+// zmienne używane w ISR
+int16_t bins[4];                         //container for 4 amp values in second
+>>>>>>> Stashed changes
 uint16_t num_of_samples = 0;
 const uint16_t num_of_samples_to_mean = 1024;   //liczba próbek do uśrednienia
 
 // zmienne używane zarówno w ISR jak i poza nim
 volatile int16_t srednia[4];            // przechowywanie kolejnych pobranych wartości odebranego sygnału, 
 volatile uint32_t ticks = 0;            // zliczanie czasu
+<<<<<<< Updated upstream
 volatile bool probkagotowa = false;     // sprawdzenie ilości zebranych próbek
+=======
+volatile bool sampleready = false;     // sprawdzenie ilości zebranych próbek
+>>>>>>> Stashed changes
 
 // zmienne używane poza rejestrami
 int16_t kalibracja[4];                                          // zmienna pobrana podczas kalibracji, odejmowana od następnie pobranych próbek.
@@ -72,7 +83,11 @@ void setup()
   ICR1L = (TIMER1 & 0xFF);
   TCNT1H = 0;
   TCNT1L = 0;
+<<<<<<< Updated upstream
   TIFR1 = 0x07;      //czyszczenie przerwań
+=======
+  TIFR1 = 0x07;      //interruption clear
+>>>>>>> Stashed changes
   TIMSK1 = (1 << TOIE1);
 
   // ustawienie timera 0
@@ -83,9 +98,15 @@ void setup()
   OCR0B = 3;
   TCNT0 = 0;
   sei();
+<<<<<<< Updated upstream
   while (!probkagotowa) {}    // odrzucenie pierwszej próbki
   misses = 0;
   probkagotowa = false;
+=======
+  while (!sampleready) {}    // odrzucenie pierwszej próbki
+  misses = 0;
+  sampleready = false;
+>>>>>>> Stashed changes
   Serial.begin(19200); 
 }
 //przerwanie przepełnienia timera 0, inkrementacja licznika w celu zliczania czasu
@@ -116,10 +137,17 @@ ISR(TIMER1_OVF_vect)
     if (num_of_samples == num_of_samples_to_mean)
     {
       num_of_samples = 0;
+<<<<<<< Updated upstream
       if (!probkagotowa)      //poprzednia próbka gotowa
       {
         memcpy((void*)srednia, bins, sizeof(srednia));
         probkagotowa = true;
+=======
+      if (!sampleready)      //poprzednia próbka gotowa
+      {
+        memcpy((void*)srednia, bins, sizeof(srednia));
+        sampleready = true;
+>>>>>>> Stashed changes
       }
       memset(bins, 0, sizeof(bins));
     }
@@ -128,7 +156,11 @@ ISR(TIMER1_OVF_vect)
 
 void loop()
 {
+<<<<<<< Updated upstream
   while (!probkagotowa) {}
+=======
+  while (!sampleready) {}
+>>>>>>> Stashed changes
   uint32_t oldTicks = ticks;
   
   if (digitalRead(PIN_calibration) == LOW) // przycik kalibracji wciśnięty
@@ -138,7 +170,11 @@ void loop()
     {
       kalibracja[i] = srednia[i];
     }
+<<<<<<< Updated upstream
     probkagotowa = false;
+=======
+    sampleready = false;
+>>>>>>> Stashed changes
     Serial.print("Calibrated: ");
     
     lcd.setCursor(0,0);
@@ -168,7 +204,11 @@ void loop()
     double bin1 = (srednia[1] + halfRoot2 * (srednia[0] + srednia[2]))/f;
     double bin2 = (srednia[2] + halfRoot2 * (srednia[1] + srednia[3]))/f;
     double bin3 = (srednia[3] + halfRoot2 * (srednia[2] - srednia[0]))/f;
+<<<<<<< Updated upstream
     probkagotowa = false;          // zakonczono wczytywanie wartości, więc rejestr jest gotowy na nowe próbki
+=======
+    sampleready = false;          // zakonczono wczytywanie wartości, więc rejestr jest gotowy na nowe próbki
+>>>>>>> Stashed changes
 
     double amp1 = sqrt((bin0 * bin0) + (bin2 * bin2));
     double amp2 = sqrt((bin1 * bin1) + (bin3 * bin3));
